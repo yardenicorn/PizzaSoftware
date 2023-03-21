@@ -14,7 +14,7 @@ namespace ThePizzaSoftware
     public static class PizzaSoftware
     {
         // This list contains a list of all the pizzas the costumer ordered and inside that list - a list of the toppings on each pizza
-        static List<List<string>> PizzasList = new List<List<string>>();
+
         public static void Main()
         {
             // Greeting message
@@ -34,14 +34,14 @@ namespace ThePizzaSoftware
             }
 
             // Get all pizzas orders
-            CreatePizzas(pizzasnum);
+            List<List<string>> pizzas = CreatePizzas(pizzasnum);
 
             // Allow the user to change the order
-            RemovePizza();
+            RemovePizza(pizzas);
 
             // Order summery
             Console.WriteLine("Your order:");
-            CostumersOrder();
+            CostumersOrder(pizzas);
             Console.WriteLine("Thank you for buying at The Unicorn Pizza!");
 
             // Pause app until any key.
@@ -51,22 +51,25 @@ namespace ThePizzaSoftware
         /// <summary>
         /// Recive pizzas order for user 
         /// </summary>
-        /// <param name="pizzasnum">Number of pizzas to get from user</param>
-        public static void CreatePizzas(int pizzasnum)
+        /// <param name="pizzasAmount">Number of pizzas to get from user</param>
+        public static List<List<string>> CreatePizzas(int pizzasAmount)
         {
+            List<List<string>> pizzas = new List<List<string>>();
             // Get all pizzas from the user
-            for (int i = 0; i < pizzasnum; i++)
+            for (int i = 0; i < pizzasAmount; i++)
             {
                 Console.WriteLine($"Create pizza number {i + 1}:");
                 List<string> nextPizza = CreateSinglePizza();
-                PizzasList.Add(nextPizza);
+                pizzas.Add(nextPizza);
                 PrintPizza($"Pizza number {i + 1} has:", nextPizza);
             }
+
+            return pizzas;
         }
 
 
         // Function that checks if the costumer wants to remove pizza from his order
-        private static void RemovePizza()
+        private static void RemovePizza(List<List<string>> pizzas)
         {
             string toRemove = "Is there any pizza you would like to remove from your order?";
             int whichPizza = ReadUserInput(toRemove, new List<string> { "Yes", "No" });
@@ -75,11 +78,11 @@ namespace ThePizzaSoftware
             while (whichPizza == 1)
             {
                 Console.WriteLine("Please enter the number of the pizza you want to remove");
-                CostumersOrder();
+                CostumersOrder(pizzas);
                 int remove = Convert.ToInt32(Console.ReadLine());
-                PizzasList.RemoveAt(remove - 1);
+                pizzas.RemoveAt(remove - 1);
 
-                if (PizzasList.Count == 0)
+                if (pizzas.Count == 0)
                 {
                     break;
                 }
@@ -92,7 +95,7 @@ namespace ThePizzaSoftware
         // Creates the pizza the costumer wants
         private static List<string> CreateSinglePizza()
         {
-            List<string> PizzaToppings = new List<string> {"extra cheese", "green olives", "black olives", "mushrooms", "onions",
+            IReadOnlyList<string> PizzaToppings = new List<string> {"extra cheese", "green olives", "black olives", "mushrooms", "onions",
                                                            "garlic", "corn", "pepperoni", "tuna", "ham", "Goomba Sauce", "I'm done!"};
 
             string toppingsMessage = "What toppings would you like on your pizza? (please enter the number of the topping you would like";
@@ -141,7 +144,7 @@ namespace ThePizzaSoftware
         /// The number the user had input - a valid number in the limits of the list.
         /// if the list is empty - the return value can be any positive number above 0.
         /// </returns>
-        public static int ReadUserInput(string message, List<string> options = null)
+        public static int ReadUserInput(string message, IReadOnlyList<string> options = null)
         {
             Console.WriteLine(message);
 
@@ -172,11 +175,11 @@ namespace ThePizzaSoftware
 
 
         // Print the Costumer's order
-        public static void CostumersOrder()
+        public static void CostumersOrder(List<List<string>> pizzas)
         {
             // Iterate all pizzas
             int i = 1;
-            foreach (var pizza in PizzasList)
+            foreach (var pizza in pizzas)
             {
                 // Print current pizza
                 PrintPizza($"Pizza number {i++}" , pizza);
